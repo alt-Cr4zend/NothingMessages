@@ -10,14 +10,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: android-actions/setup-android@v3
-      - run: chmod +x gradlew
-      - run: ./gradlew assembleDebug --no-daemon
+
+      - name: Make gradlew executable
+        run: find . -name "gradlew" -exec chmod +x {} \;
+
+      - name: Build debug APK
+        run: |
+          # Find the gradlew and run from its directory
+          GRADLEW=$(find . -name "gradlew" | head -1)
+          DIR=$(dirname "$GRADLEW")
+          echo "Building from $DIR"
+          cd "$DIR"
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
       - uses: actions/upload-artifact@v4
         with:
           name: nothing-messages-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: "**/app/build/outputs/apk/debug/app-debug.apk"
