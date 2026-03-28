@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outer red border -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FF3B30"
+        android:strokeWidth="2"
+        android:pathData="M10,10 L98,10 L98,98 L10,98 Z"/>
+
+    <!-- Inner gray shadow border (offset) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#3A3A3A"
+        android:strokeWidth="1"
+        android:pathData="M13,13 L101,13 L101,101 L13,101 Z"
+        android:strokeAlpha="0.3"/>
+
+    <!-- Message bubble body -->
+    <path
+        android:fillColor="#FF3B30"
+        android:fillAlpha="0.12"
+        android:strokeColor="#FF3B30"
+        android:strokeWidth="2"
+        android:pathData="M20,30 L88,30 L88,72 L20,72 Z"/>
+
+    <!-- Text lines inside bubble -->
+    <path android:fillColor="#FF3B30" android:fillAlpha="0.7"
+        android:pathData="M28,42 L80,42 L80,46 L28,46 Z"/>
+    <path android:fillColor="#FF3B30" android:fillAlpha="0.5"
+        android:pathData="M28,52 L64,52 L64,56 L28,56 Z"/>
+    <path android:fillColor="#FF3B30" android:fillAlpha="0.5"
+        android:pathData="M28,62 L72,62 L72,66 L28,66 Z"/>
+
+    <!-- Bubble tail -->
+    <path
+        android:fillColor="#FF3B30"
+        android:fillAlpha="0.85"
+        android:pathData="M28,72 L20,84 L44,72 Z"/>
+
+    <!-- Corner accent TL -->
+    <path android:fillColor="#FF3B30" android:pathData="M10,10 L22,10 L22,12 L10,12 Z"/>
+    <path android:fillColor="#FF3B30" android:pathData="M10,10 L12,10 L12,22 L10,22 Z"/>
+    <!-- Corner accent TR -->
+    <path android:fillColor="#FF3B30" android:pathData="M86,10 L98,10 L98,12 L86,12 Z"/>
+    <path android:fillColor="#FF3B30" android:pathData="M96,10 L98,10 L98,22 L96,22 Z"/>
+    <!-- Corner accent BL -->
+    <path android:fillColor="#FF3B30" android:pathData="M10,96 L22,96 L22,98 L10,98 Z"/>
+    <path android:fillColor="#FF3B30" android:pathData="M10,86 L12,86 L12,98 L10,98 Z"/>
+    <!-- Corner accent BR -->
+    <path android:fillColor="#FF3B30" android:pathData="M86,96 L98,96 L98,98 L86,98 Z"/>
+    <path android:fillColor="#FF3B30" android:pathData="M96,86 L98,86 L98,98 L96,98 Z"/>
+
+</vector>
