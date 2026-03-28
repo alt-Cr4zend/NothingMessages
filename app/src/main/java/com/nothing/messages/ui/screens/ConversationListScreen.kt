@@ -1,19 +1,19 @@
 package com.nothing.messages.ui.screens
 
-import androidx.compose.animation.*
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -38,8 +38,8 @@ fun ConversationListScreen(
             .filter { if (filterUnread) it.unreadCount > 0 else true }
             .filter {
                 searchQuery.isEmpty() ||
-                it.name.contains(searchQuery, ignoreCase = true) ||
-                it.number.contains(searchQuery)
+                    it.name.contains(searchQuery, ignoreCase = true) ||
+                    it.number.contains(searchQuery)
             }
     }
 
@@ -50,7 +50,7 @@ fun ConversationListScreen(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
-            // ── Header ──────────────────────────────────────────────
+            // Header
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -70,34 +70,60 @@ fun ConversationListScreen(
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Column {
-                        Text(
-                            text = "NOTHING_OS // MESSAGES",
-                            style = NothingType.OsLabel
-                        )
+                        Text(text = "NOTHING_OS // MESSAGES", style = NothingType.OsLabel)
                         Spacer(Modifier.height(4.dp))
+                        Text(text = "INBOX", style = NothingType.ScreenTitle)
+                    }
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .border(1.dp, if (filterUnread) NothingColors.Red else NothingColors.Gray)
+                            .clickable { filterUnread = !filterUnread }
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
                         Text(
-                            text = "INBOX",
-                            style = NothingType.ScreenTitle
+                            text = if (filterUnread) "UNREAD ▲" else "FILTER",
+                            style = NothingType.OsLabel.copy(
+                                color = if (filterUnread) NothingColors.Red else NothingColors.Gray,
+                                letterSpacing = 1.8.sp
+                            )
                         )
                     }
-                    FilterButton(
-                        active = filterUnread,
-                        onClick = { filterUnread = !filterUnread }
-                    )
                 }
 
                 Spacer(Modifier.height(14.dp))
 
                 // Search field
-                NothingSearchField(
+                BasicTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
-                    focused = searchFocused,
-                    onFocusChange = { searchFocused = it }
+                    textStyle = NothingType.InputText.copy(fontSize = 12.sp),
+                    cursorBrush = SolidColor(NothingColors.Red),
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .drawBehind {
+                            drawLine(NothingColors.Gray, Offset(0f, 0f), Offset(size.width, 0f), 1.dp.toPx())
+                            drawLine(NothingColors.Gray, Offset(0f, 0f), Offset(0f, size.height), 1.dp.toPx())
+                            drawLine(NothingColors.Gray, Offset(size.width, 0f), Offset(size.width, size.height), 1.dp.toPx())
+                            val bottomColor = if (searchFocused || searchQuery.isNotEmpty()) NothingColors.Red else NothingColors.Gray
+                            drawLine(bottomColor, Offset(0f, size.height), Offset(size.width, size.height), 2.dp.toPx())
+                        }
+                        .background(NothingColors.Dim)
+                        .padding(horizontal = 12.dp, vertical = 10.dp)
+                        .onFocusChanged { searchFocused = it.isFocused },
+                    decorationBox = { inner ->
+                        Box {
+                            if (searchQuery.isEmpty()) {
+                                Text("SEARCH_", style = NothingType.InputText.copy(color = NothingColors.Gray, fontSize = 12.sp))
+                            }
+                            inner()
+                        }
+                    }
                 )
             }
 
-            // ── Conversation list ────────────────────────────────────
+            // List
             if (filtered.isEmpty()) {
                 Box(
                     modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -111,15 +137,12 @@ fun ConversationListScreen(
             } else {
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     items(filtered, key = { it.id }) { conv ->
-                        ConversationItem(
-                            conversation = conv,
-                            onClick = { onConversationClick(conv.id) }
-                        )
+                        ConversationItem(conversation = conv, onClick = { onConversationClick(conv.id) })
                     }
                 }
             }
 
-            // ── FAB / Compose button ─────────────────────────────────
+            // Compose button
             NothingDivider()
             Box(
                 modifier = Modifier
@@ -136,10 +159,7 @@ fun ConversationListScreen(
                         .background(NothingColors.Red)
                         .clickable { onNewMessage() }
                 ) {
-                    Text(
-                        text = "+   NEW MESSAGE",
-                        style = NothingType.ButtonLabel
-                    )
+                    Text(text = "+   NEW MESSAGE", style = NothingType.ButtonLabel)
                 }
             }
         }
@@ -149,67 +169,7 @@ fun ConversationListScreen(
 }
 
 @Composable
-private fun FilterButton(active: Boolean, onClick: () -> Unit) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .border(1.dp, if (active) NothingColors.Red else NothingColors.Gray)
-            .clickable { onClick() }
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-    ) {
-        Text(
-            text = if (active) "UNREAD ▲" else "FILTER",
-            style = NothingType.OsLabel.copy(
-                color = if (active) NothingColors.Red else NothingColors.Gray,
-                letterSpacing = 1.8.sp
-            )
-        )
-    }
-}
-
-@Composable
-private fun NothingSearchField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    focused: Boolean,
-    onFocusChange: (Boolean) -> Unit
-) {
-    BasicTextField(
-        value = value,
-        onValueChange = onValueChange,
-        textStyle = NothingType.InputText.copy(fontSize = 12.sp),
-        cursorBrush = SolidColor(NothingColors.Red),
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .drawBehind {
-                // Top + sides border
-                drawLine(NothingColors.Gray, Offset(0f, 0f), Offset(size.width, 0f), 1.dp.toPx())
-                drawLine(NothingColors.Gray, Offset(0f, 0f), Offset(0f, size.height), 1.dp.toPx())
-                drawLine(NothingColors.Gray, Offset(size.width, 0f), Offset(size.width, size.height), 1.dp.toPx())
-                // Bottom accent
-                val bottomColor = if (focused || value.isNotEmpty()) NothingColors.Red else NothingColors.Gray
-                drawLine(bottomColor, Offset(0f, size.height), Offset(size.width, size.height), 2.dp.toPx())
-            }
-            .background(NothingColors.Dim)
-            .padding(horizontal = 12.dp, vertical = 10.dp)
-            .onFocusChanged { onFocusChange(it.isFocused) },
-        decorationBox = { inner ->
-            Box {
-                if (value.isEmpty()) {
-                    Text("SEARCH_", style = NothingType.InputText.copy(color = NothingColors.Gray, fontSize = 12.sp))
-                }
-                inner()
-            }
-        }
-    )
-}
-
-@Composable
-private fun ConversationItem(
-    conversation: Conversation,
-    onClick: () -> Unit
-) {
+private fun ConversationItem(conversation: Conversation, onClick: () -> Unit) {
     val last = conversation.lastMessage
 
     Row(
@@ -219,23 +179,12 @@ private fun ConversationItem(
             .clickable { onClick() }
             .drawBehind {
                 if (conversation.unreadCount > 0) {
-                    drawLine(
-                        color = NothingColors.Red,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = 2.dp.toPx()
-                    )
+                    drawLine(NothingColors.Red, Offset(0f, 0f), Offset(0f, size.height), 2.dp.toPx())
                 }
-                drawLine(
-                    color = NothingColors.Dim,
-                    start = Offset(0f, size.height),
-                    end = Offset(size.width, size.height),
-                    strokeWidth = 1.dp.toPx()
-                )
+                drawLine(NothingColors.Dim, Offset(0f, size.height), Offset(size.width, size.height), 1.dp.toPx())
             }
             .padding(horizontal = 20.dp, vertical = 14.dp)
     ) {
-        // Avatar with badge
         Box {
             NothingAvatar(initials = conversation.avatar)
             if (conversation.unreadCount > 0) {
@@ -260,10 +209,7 @@ private fun ConversationItem(
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(Modifier.width(8.dp))
-                Text(
-                    text = last?.time ?: "",
-                    style = NothingType.TimeStamp
-                )
+                Text(text = last?.time ?: "", style = NothingType.TimeStamp)
             }
             Spacer(Modifier.height(4.dp))
             if (last != null) {

@@ -1,21 +1,21 @@
 package com.nothing.messages.ui.screens
 
-import androidx.compose.animation.*
-import androidx.compose.foundation.*
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,14 +38,12 @@ fun ChatScreen(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
-    // Scroll to bottom when messages change
     LaunchedEffect(conversation.messages.size) {
         if (conversation.messages.isNotEmpty()) {
             listState.animateScrollToItem(conversation.messages.size - 1)
         }
     }
 
-    // Auto-clear typing indicator
     LaunchedEffect(inputText) {
         if (inputText.isNotEmpty()) {
             isTyping = true
@@ -63,7 +61,7 @@ fun ChatScreen(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
-            // ── Chat Header ──────────────────────────────────────────
+            // Header
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -78,17 +76,10 @@ fun ChatScreen(
                     }
                     .padding(horizontal = 16.dp, vertical = 10.dp)
             ) {
-                // Back button
-                NothingIconButton(label = "←", onClick = onBack)
-
+                ChatIconButton(label = "←", onClick = onBack)
                 Spacer(Modifier.width(12.dp))
-
-                // Mini avatar
                 NothingAvatar(initials = conversation.avatar, size = 36.dp)
-
                 Spacer(Modifier.width(12.dp))
-
-                // Contact info
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = conversation.name,
@@ -104,25 +95,24 @@ fun ChatScreen(
                         )
                     )
                 }
-
-                // Action buttons
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    NothingIconButton(label = "☎", onClick = {})
-                    NothingIconButton(label = "⋮", onClick = {})
+                    ChatIconButton(label = "☎", onClick = {})
+                    ChatIconButton(label = "⋮", onClick = {})
                 }
             }
 
-            // ── Messages ─────────────────────────────────────────────
+            // Messages
             LazyColumn(
                 state = listState,
                 modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 item {
-                    // Date stamp
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp)
                     ) {
                         Box(
                             modifier = Modifier
@@ -133,13 +123,12 @@ fun ChatScreen(
                         }
                     }
                 }
-
                 items(conversation.messages, key = { it.id }) { msg ->
                     MessageBubble(message = msg)
                 }
             }
 
-            // ── Input bar ────────────────────────────────────────────
+            // Input
             NothingDivider()
             ChatInputBar(
                 value = inputText,
@@ -152,7 +141,7 @@ fun ChatScreen(
                 }
             )
 
-            // Char count
+            // Char counter
             Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier
@@ -163,11 +152,9 @@ fun ChatScreen(
             ) {
                 val len = inputText.length
                 val type = if (len > 160) "MMS" else "SMS"
-                val max = if (len > 160) (Math.ceil(len / 153.0) * 153).toInt() else 160
-                Text(
-                    text = "$len/$max · $type",
-                    style = NothingType.CharCount
-                )
+                val segments = if (len > 160) Math.ceil(len / 153.0).toInt() else 1
+                val max = if (len > 160) segments * 153 else 160
+                Text(text = "$len/$max · $type", style = NothingType.CharCount)
             }
         }
 
@@ -176,7 +163,7 @@ fun ChatScreen(
 }
 
 @Composable
-private fun NothingIconButton(label: String, onClick: () -> Unit) {
+fun ChatIconButton(label: String, onClick: () -> Unit) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -201,7 +188,6 @@ private fun ChatInputBar(
             .background(NothingColors.Dim)
             .padding(horizontal = 14.dp, vertical = 10.dp)
     ) {
-        // Attach button
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -214,8 +200,6 @@ private fun ChatInputBar(
 
         Spacer(Modifier.width(8.dp))
 
-        // Text input
-        val focused = remember { mutableStateOf(false) }
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
@@ -245,7 +229,6 @@ private fun ChatInputBar(
 
         Spacer(Modifier.width(8.dp))
 
-        // Send button
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -270,13 +253,8 @@ private fun MessageBubble(message: Message) {
         Box(
             modifier = Modifier
                 .widthIn(max = 280.dp)
-                .background(
-                    if (message.fromMe) NothingColors.Red else NothingColors.Dim
-                )
-                .border(
-                    1.dp,
-                    if (message.fromMe) NothingColors.Red else NothingColors.Gray
-                )
+                .background(if (message.fromMe) NothingColors.Red else NothingColors.Dim)
+                .border(1.dp, if (message.fromMe) NothingColors.Red else NothingColors.Gray)
                 .padding(horizontal = 14.dp, vertical = 10.dp)
         ) {
             Column {
@@ -290,7 +268,8 @@ private fun MessageBubble(message: Message) {
                     Text(
                         text = message.time,
                         style = NothingType.BubbleMeta.copy(
-                            color = if (message.fromMe) NothingColors.White.copy(alpha = 0.55f) else NothingColors.Gray
+                            color = if (message.fromMe) NothingColors.White.copy(alpha = 0.55f)
+                            else NothingColors.Gray
                         )
                     )
                     if (message.fromMe) {

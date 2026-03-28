@@ -3,7 +3,6 @@ package com.nothing.messages.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,7 +16,6 @@ import androidx.compose.ui.unit.sp
 import com.nothing.messages.ui.theme.NothingColors
 import com.nothing.messages.ui.theme.NothingType
 
-// ── NothingAvatar ────────────────────────────────────────────────
 @Composable
 fun NothingAvatar(
     initials: String,
@@ -31,7 +29,6 @@ fun NothingAvatar(
             .border(1.dp, NothingColors.Gray)
             .background(Color.Transparent)
             .drawBehind {
-                // Shadow/offset border
                 drawRect(
                     color = NothingColors.Gray.copy(alpha = 0.25f),
                     topLeft = Offset(3.dp.toPx(), 3.dp.toPx()),
@@ -46,7 +43,6 @@ fun NothingAvatar(
     }
 }
 
-// ── UnreadBadge ──────────────────────────────────────────────────
 @Composable
 fun UnreadBadge(count: Int) {
     Box(
@@ -66,7 +62,6 @@ fun UnreadBadge(count: Int) {
     }
 }
 
-// ── ScanlineOverlay ──────────────────────────────────────────────
 @Composable
 fun ScanlineOverlay(modifier: Modifier = Modifier) {
     Box(
@@ -87,39 +82,6 @@ fun ScanlineOverlay(modifier: Modifier = Modifier) {
     )
 }
 
-// ── Corner accent decoration ─────────────────────────────────────
-@Composable
-fun CornerAccents(
-    color: Color = NothingColors.Gray,
-    size: Dp = 12.dp,
-    thickness: Dp = 1.dp,
-    modifier: Modifier = Modifier
-) {
-    Box(modifier = modifier.fillMaxSize()) {
-        // Top-left
-        Box(Modifier.align(Alignment.TopStart)) {
-            Box(Modifier.width(size).height(thickness).background(color))
-            Box(Modifier.width(thickness).height(size).background(color))
-        }
-        // Top-right
-        Box(Modifier.align(Alignment.TopEnd)) {
-            Box(Modifier.width(size).height(thickness).background(color).align(Alignment.TopEnd))
-            Box(Modifier.width(thickness).height(size).background(color).align(Alignment.TopEnd))
-        }
-        // Bottom-left
-        Box(Modifier.align(Alignment.BottomStart)) {
-            Box(Modifier.width(size).height(thickness).background(color).align(Alignment.BottomStart))
-            Box(Modifier.width(thickness).height(size).background(color).align(Alignment.BottomStart))
-        }
-        // Bottom-right
-        Box(Modifier.align(Alignment.BottomEnd)) {
-            Box(Modifier.width(size).height(thickness).background(color).align(Alignment.BottomEnd))
-            Box(Modifier.width(thickness).height(size).background(color).align(Alignment.BottomEnd))
-        }
-    }
-}
-
-// ── Divider line ─────────────────────────────────────────────────
 @Composable
 fun NothingDivider(color: Color = NothingColors.Gray, modifier: Modifier = Modifier) {
     Box(

@@ -1,9 +1,14 @@
 package com.nothing.messages.ui.screens
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,23 +28,20 @@ fun NewMessageSheet(
 ) {
     var toValue by remember { mutableStateOf("") }
     var nameValue by remember { mutableStateOf("") }
+    val sheetState = rememberModalBottomSheetState(skipPartialExpansion = true)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
+        sheetState = sheetState,
         containerColor = NothingColors.Bg,
         dragHandle = null,
-        modifier = Modifier.drawBehind {
-            drawLine(
-                NothingColors.Red,
-                Offset(0f, 0f),
-                Offset(size.width, 0f),
-                2.dp.toPx()
-            )
-        }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .drawBehind {
+                    drawLine(NothingColors.Red, Offset(0f, 0f), Offset(size.width, 0f), 2.dp.toPx())
+                }
                 .padding(20.dp)
                 .navigationBarsPadding()
         ) {
@@ -47,19 +49,15 @@ fun NewMessageSheet(
                 text = "// NEW MESSAGE",
                 style = NothingType.OsLabel.copy(letterSpacing = 2.sp)
             )
-
             Spacer(Modifier.height(18.dp))
 
             SheetField(label = "TO_", value = toValue, onValueChange = { toValue = it }, hint = "+1 (000) 000-0000")
-
             Spacer(Modifier.height(14.dp))
-
             SheetField(label = "NAME_ (OPTIONAL)", value = nameValue, onValueChange = { nameValue = it.uppercase() }, hint = "CONTACT NAME")
 
             Spacer(Modifier.height(20.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                // Cancel
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
@@ -70,7 +68,6 @@ fun NewMessageSheet(
                 ) {
                     Text("CANCEL", style = NothingType.ButtonLabel.copy(fontSize = 11.sp))
                 }
-                // Start
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
@@ -94,10 +91,7 @@ private fun SheetField(
     hint: String
 ) {
     Column {
-        Text(
-            text = label,
-            style = NothingType.OsLabel.copy(letterSpacing = 2.sp)
-        )
+        Text(text = label, style = NothingType.OsLabel.copy(letterSpacing = 2.sp))
         Spacer(Modifier.height(4.dp))
         BasicTextField(
             value = value,

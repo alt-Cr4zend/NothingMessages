@@ -4,7 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.*
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -32,7 +33,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NothingMessagesApp() {
     val viewModel: MessagesViewModel = viewModel()
@@ -50,28 +50,16 @@ fun NothingMessagesApp() {
             navController = navController,
             startDestination = "list",
             enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(220)
-                )
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(220))
             },
             exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -it / 4 },
-                    animationSpec = tween(220)
-                )
+                slideOutHorizontally(targetOffsetX = { -it / 4 }, animationSpec = tween(220))
             },
             popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { -it / 4 },
-                    animationSpec = tween(220)
-                )
+                slideInHorizontally(initialOffsetX = { -it / 4 }, animationSpec = tween(220))
             },
             popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(220)
-                )
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(220))
             }
         ) {
             composable("list") {
@@ -91,11 +79,7 @@ fun NothingMessagesApp() {
                 arguments = listOf(navArgument("convId") { type = NavType.LongType })
             ) { backStackEntry ->
                 val convId = backStackEntry.arguments?.getLong("convId") ?: return@composable
-                val conv = viewModel.getConversation(convId)
-
-                // Observe live conversation from state
                 val liveConv = conversations.find { it.id == convId }
-
                 if (liveConv != null) {
                     ChatScreen(
                         conversation = liveConv,
@@ -107,16 +91,16 @@ fun NothingMessagesApp() {
             }
         }
 
-        // New message bottom sheet
         if (showNewMessage) {
             NewMessageSheet(
                 onDismiss = { showNewMessage = false },
                 onStart = { name, number ->
                     viewModel.addConversation(name, number)
                     showNewMessage = false
-                    // Navigate to the new conversation
-                    val newId = conversations.firstOrNull()?.id
-                    if (newId != null) navController.navigate("chat/$newId")
+                    val newId = viewModel.conversations.value.firstOrNull()?.id
+                    if (newId != null) {
+                        navController.navigate("chat/$newId")
+                    }
                 }
             )
         }
